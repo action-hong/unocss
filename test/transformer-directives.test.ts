@@ -16,7 +16,7 @@ describe('transformer-directives', () => {
       }),
     ],
     shortcuts: {
-      btn: 'px-2 py-3 md:px-4 bg-blue-500 text-white rounded',
+      btn: 'px-2 py-3 md:px-4 bg-blue-500 text-white rounded animate-spin',
     },
   })
 
@@ -29,269 +29,307 @@ describe('transformer-directives', () => {
     })
   }
 
-  test('basic', async() => {
-    const result = await transform(
-      '.btn { @apply rounded text-lg font-mono; }',
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        ".btn {
-          border-radius: 0.25rem;
-          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-            \\"Liberation Mono\\", \\"Courier New\\", monospace;
-          font-size: 1.125rem;
-          line-height: 1.75rem;
-        }
-        "
-      `)
-  })
+  // test('basic', async() => {
+  //   const result = await transform(
+  //     '.btn { @apply rounded text-lg font-mono; }',
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       ".btn {
+  //         border-radius: 0.25rem;
+  //         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+  //           \\"Liberation Mono\\", \\"Courier New\\", monospace;
+  //         font-size: 1.125rem;
+  //         line-height: 1.75rem;
+  //       }
+  //       "
+  //     `)
+  // })
 
-  test('breakpoint', async() => {
-    const result = await transform(
-      '.grid { @apply grid grid-cols-2 xl:grid-cols-10 sm:grid-cols-7 md:grid-cols-3 lg:grid-cols-4 }',
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        ".grid {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-        @media (min-width: 640px) {
-          .grid {
-            grid-template-columns: repeat(7, minmax(0, 1fr));
+  // test('breakpoint', async() => {
+  //   const result = await transform(
+  //     '.grid { @apply grid grid-cols-2 xl:grid-cols-10 sm:grid-cols-7 md:grid-cols-3 lg:grid-cols-4 }',
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       ".grid {
+  //         display: grid;
+  //         grid-template-columns: repeat(2, minmax(0, 1fr));
+  //       }
+  //       @media (min-width: 640px) {
+  //         .grid {
+  //           grid-template-columns: repeat(7, minmax(0, 1fr));
+  //         }
+  //       }
+  //       @media (min-width: 768px) {
+  //         .grid {
+  //           grid-template-columns: repeat(3, minmax(0, 1fr));
+  //         }
+  //       }
+  //       @media (min-width: 1024px) {
+  //         .grid {
+  //           grid-template-columns: repeat(4, minmax(0, 1fr));
+  //         }
+  //       }
+  //       @media (min-width: 1280px) {
+  //         .grid {
+  //           grid-template-columns: repeat(10, minmax(0, 1fr));
+  //         }
+  //       }
+  //       "
+  //     `)
+  // })
+
+  // test('variant group', async() => {
+  //   const result = await transform(
+  //     '.btn { @apply grid-(cols-2 rows-4) hover:(border bg-white) }',
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       ".btn {
+  //         grid-template-columns: repeat(2, minmax(0, 1fr));
+  //         grid-template-rows: repeat(4, minmax(0, 1fr));
+  //       }
+  //       .btn:hover {
+  //         border-width: 1px;
+  //         border-style: solid;
+  //         --un-bg-opacity: 1;
+  //         background-color: rgba(255, 255, 255, var(--un-bg-opacity));
+  //       }
+  //       "
+  //     `)
+  // })
+
+  // test('pseudo-classes', async() => {
+  //   const result = await transform(
+  //     '.btn { @apply p-3 hover:bg-white focus:border }',
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       ".btn {
+  //         padding: 0.75rem;
+  //       }
+  //       .btn:focus {
+  //         border-width: 1px;
+  //         border-style: solid;
+  //       }
+  //       .btn:hover {
+  //         --un-bg-opacity: 1;
+  //         background-color: rgba(255, 255, 255, var(--un-bg-opacity));
+  //       }
+  //       "
+  //     `)
+  // })
+
+  // test('multiple pseudo-classes', async() => {
+  //   const result = await transform(
+  //     '.btn { @apply sm:hover:bg-white }',
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       ".btn {
+  //       }
+  //       @media (min-width: 640px) {
+  //         .btn:hover {
+  //           --un-bg-opacity: 1;
+  //           background-color: rgba(255, 255, 255, var(--un-bg-opacity));
+  //         }
+  //       }
+  //       "
+  //     `)
+  // })
+
+  // test('element selector', async() => {
+  //   const result = await transform(
+  //     'input { @apply px-3 focus:border; }',
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       "input {
+  //         padding-left: 0.75rem;
+  //         padding-right: 0.75rem;
+  //       }
+  //       input:focus {
+  //         border-width: 1px;
+  //         border-style: solid;
+  //       }
+  //       "
+  //     `)
+  // })
+
+  // test('multiple selector', async() => {
+  //   const result = await transform(
+  //     '.btn,.box { @apply px-3 focus:border; }',
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       ".btn,
+  //       .box {
+  //         padding-left: 0.75rem;
+  //         padding-right: 0.75rem;
+  //       }
+  //       .btn:focus,
+  //       .box:focus {
+  //         border-width: 1px;
+  //         border-style: solid;
+  //       }
+  //       "
+  //     `)
+  // })
+
+  // test('two class selector', async() => {
+  //   const result = await transform(
+  //     '.btn.box { @apply px-3 focus:border; }',
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       ".btn.box {
+  //         padding-left: 0.75rem;
+  //         padding-right: 0.75rem;
+  //       }
+  //       .btn.box:focus {
+  //         border-width: 1px;
+  //         border-style: solid;
+  //       }
+  //       "
+  //     `)
+  // })
+
+  // test('multiple apply', async() => {
+  //   const result = await transform(
+  //     `.btn {
+  //       @apply p-3;
+  //       @apply bg-white;
+  //       @apply hover:bg-blue-500;
+  //       @apply hover:border;
+  //     }`,
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       ".btn {
+  //         padding: 0.75rem;
+  //         --un-bg-opacity: 1;
+  //         background-color: rgba(255, 255, 255, var(--un-bg-opacity));
+  //       }
+  //       .btn:hover {
+  //         border-width: 1px;
+  //         border-style: solid;
+  //       }
+  //       .btn:hover {
+  //         --un-bg-opacity: 1;
+  //         background-color: rgba(59, 130, 246, var(--un-bg-opacity));
+  //       }
+  //       "
+  //     `)
+  // })
+
+  // test('dark class', async() => {
+  //   const uno = createGenerator({
+  //     presets: [
+  //       presetUno({
+  //         dark: 'class',
+  //       }),
+  //     ],
+  //     shortcuts: {
+  //       btn: 'px-2 py-3 md:px-4 bg-blue-500 text-white rounded',
+  //     },
+  //   })
+  //   const result = await transform(
+  //     `.btn {
+  //       @apply bg-white dark:bg-black;
+  //     }`,
+  //     uno,
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       ".btn {
+  //         --un-bg-opacity: 1;
+  //         background-color: rgba(255, 255, 255, var(--un-bg-opacity));
+  //       }
+  //       .dark .btn {
+  //         --un-bg-opacity: 1;
+  //         background-color: rgba(0, 0, 0, var(--un-bg-opacity));
+  //       }
+  //       "
+  //     `)
+  // })
+
+  // test('nested class', async() => {
+  //   const result = await transform(
+  //     `nav {
+  //       ul {
+  //         li {
+  //           @apply border;
+  //         }
+  //       }
+  //       a {
+  //         @apply px-2 hover:underline;
+  //       }
+  //     }`,
+  //   )
+  //   expect(result)
+  //     .toMatchInlineSnapshot(`
+  //       "nav {
+  //         ul {
+  //           li {
+  //             border-width: 1px;
+  //             border-style: solid;
+  //           }
+  //         }
+  //         a {
+  //           padding-left: 0.5rem;
+  //           padding-right: 0.5rem;
+  //         }
+  //         a:hover {
+  //           text-decoration-line: underline;
+  //         }
+  //       }
+  //       "
+  //     `)
+  // })
+
+  // test('css file', async() => {
+  //   const css = await readFile('./test/assets/apply.css', 'utf8')
+  //   const result = await transform(css)
+
+  //   expect(result).toMatchSnapshot()
+  // })
+
+  test('animte', async() => {
+    const result = await transform('.loading, .abc { @apply btn duration-2000; }')
+    expect(result).toMatchInlineSnapshot(`
+      ".loading,
+      .abc {
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
           }
         }
-        @media (min-width: 768px) {
-          .grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-          }
+        .\\\\.loading\\\\2c \\\\.abc {
+          animation: spin 1s linear infinite;
         }
-        @media (min-width: 1024px) {
-          .grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-          }
+        border-radius: 0.25rem;
+        --un-bg-opacity: 1;
+        background-color: rgba(59, 130, 246, var(--un-bg-opacity));
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        --un-text-opacity: 1;
+        color: rgba(255, 255, 255, var(--un-text-opacity));
+        transition-duration: 2000ms;
+      }
+      @media (min-width: 768px) {
+        .loading,
+        .abc {
+          padding-left: 1rem;
+          padding-right: 1rem;
         }
-        @media (min-width: 1280px) {
-          .grid {
-            grid-template-columns: repeat(10, minmax(0, 1fr));
-          }
-        }
-        "
-      `)
-  })
-
-  test('variant group', async() => {
-    const result = await transform(
-      '.btn { @apply grid-(cols-2 rows-4) hover:(border bg-white) }',
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        ".btn {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          grid-template-rows: repeat(4, minmax(0, 1fr));
-        }
-        .btn:hover {
-          border-width: 1px;
-          border-style: solid;
-          --un-bg-opacity: 1;
-          background-color: rgba(255, 255, 255, var(--un-bg-opacity));
-        }
-        "
-      `)
-  })
-
-  test('pseudo-classes', async() => {
-    const result = await transform(
-      '.btn { @apply p-3 hover:bg-white focus:border }',
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        ".btn {
-          padding: 0.75rem;
-        }
-        .btn:focus {
-          border-width: 1px;
-          border-style: solid;
-        }
-        .btn:hover {
-          --un-bg-opacity: 1;
-          background-color: rgba(255, 255, 255, var(--un-bg-opacity));
-        }
-        "
-      `)
-  })
-
-  test('multiple pseudo-classes', async() => {
-    const result = await transform(
-      '.btn { @apply sm:hover:bg-white }',
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        ".btn {
-        }
-        @media (min-width: 640px) {
-          .btn:hover {
-            --un-bg-opacity: 1;
-            background-color: rgba(255, 255, 255, var(--un-bg-opacity));
-          }
-        }
-        "
-      `)
-  })
-
-  test('element selector', async() => {
-    const result = await transform(
-      'input { @apply px-3 focus:border; }',
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        "input {
-          padding-left: 0.75rem;
-          padding-right: 0.75rem;
-        }
-        input:focus {
-          border-width: 1px;
-          border-style: solid;
-        }
-        "
-      `)
-  })
-
-  test('multiple selector', async() => {
-    const result = await transform(
-      '.btn,.box { @apply px-3 focus:border; }',
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        ".btn,
-        .box {
-          padding-left: 0.75rem;
-          padding-right: 0.75rem;
-        }
-        .btn:focus,
-        .box:focus {
-          border-width: 1px;
-          border-style: solid;
-        }
-        "
-      `)
-  })
-
-  test('two class selector', async() => {
-    const result = await transform(
-      '.btn.box { @apply px-3 focus:border; }',
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        ".btn.box {
-          padding-left: 0.75rem;
-          padding-right: 0.75rem;
-        }
-        .btn.box:focus {
-          border-width: 1px;
-          border-style: solid;
-        }
-        "
-      `)
-  })
-
-  test('multiple apply', async() => {
-    const result = await transform(
-      `.btn {
-        @apply p-3;
-        @apply bg-white;
-        @apply hover:bg-blue-500;
-        @apply hover:border;
-      }`,
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        ".btn {
-          padding: 0.75rem;
-          --un-bg-opacity: 1;
-          background-color: rgba(255, 255, 255, var(--un-bg-opacity));
-        }
-        .btn:hover {
-          border-width: 1px;
-          border-style: solid;
-        }
-        .btn:hover {
-          --un-bg-opacity: 1;
-          background-color: rgba(59, 130, 246, var(--un-bg-opacity));
-        }
-        "
-      `)
-  })
-
-  test('dark class', async() => {
-    const uno = createGenerator({
-      presets: [
-        presetUno({
-          dark: 'class',
-        }),
-      ],
-      shortcuts: {
-        btn: 'px-2 py-3 md:px-4 bg-blue-500 text-white rounded',
-      },
-    })
-    const result = await transform(
-      `.btn {
-        @apply bg-white dark:bg-black;
-      }`,
-      uno,
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        ".btn {
-          --un-bg-opacity: 1;
-          background-color: rgba(255, 255, 255, var(--un-bg-opacity));
-        }
-        .dark .btn {
-          --un-bg-opacity: 1;
-          background-color: rgba(0, 0, 0, var(--un-bg-opacity));
-        }
-        "
-      `)
-  })
-
-  test('nested class', async() => {
-    const result = await transform(
-      `nav {
-        ul {
-          li {
-            @apply border;
-          }
-        }
-        a {
-          @apply px-2 hover:underline;
-        }
-      }`,
-    )
-    expect(result)
-      .toMatchInlineSnapshot(`
-        "nav {
-          ul {
-            li {
-              border-width: 1px;
-              border-style: solid;
-            }
-          }
-          a {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-          }
-          a:hover {
-            text-decoration-line: underline;
-          }
-        }
-        "
-      `)
-  })
-
-  test('css file', async() => {
-    const css = await readFile('./test/assets/apply.css', 'utf8')
-    const result = await transform(css)
-
-    expect(result).toMatchSnapshot()
+      }
+      "
+    `)
   })
 })

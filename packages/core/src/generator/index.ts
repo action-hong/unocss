@@ -1,4 +1,4 @@
-import type { CSSEntries, CSSObject, ExtractorContext, GenerateOptions, GenerateResult, ParsedUtil, PreflightContext, RawUtil, ResolvedConfig, RuleContext, RuleMeta, StringifiedUtil, UserConfig, UserConfigDefaults, UtilObject, Variant, VariantContext, VariantHandler, VariantMatchedResult } from '../types'
+import type { CSSEntries, CSSObject, ExtractorContext, GenerateOptions, GenerateResult, ParsedUtil, PreflightContext, RawUtil, ResolvedConfig, RuleContext, RuleMeta, StringifiedUtil, UserConfig, UserConfigDefaults, UtilObject, Variant, VariantContext, VariantHandler, VariantMatchedResult, parseTokenOptions } from '../types'
 import { resolveConfig } from '../config'
 import { CONTROL_SHORTCUT_NO_MERGE, TwoKeyMap, e, entriesToCss, expandVariantGroup, isRawUtil, isStaticShortcut, normalizeCSSEntries, normalizeCSSValues, notNull, uniq, warnOnce } from '../utils'
 import { version } from '../../package.json'
@@ -57,11 +57,22 @@ export class UnoGenerator {
     return context
   }
 
-  async parseToken(raw: string, alias?: string) {
+  async parseToken(raw: string, option?: string | parseTokenOptions) {
     if (this.blocked.has(raw))
       return
 
-    const cacheKey = `${raw}${alias ? ` ${alias}` : ''}`
+    let alias = ''
+    let rawSelector = raw
+    if (typeof option === 'string') {
+      alias = option
+      rawSelector = raw
+    }
+    else {
+      alias = option?.alias || ''
+      rawSelector = option?.rawSelector || raw
+    }
+
+    const cacheKey = `${raw}${alias}`
 
     // use caches if possible
     if (this._cache.has(cacheKey))
@@ -84,16 +95,18 @@ export class UnoGenerator {
       this._cache.set(cacheKey, null)
       return
     }
-
+    // 如何把这个raw变成对应的apply外面的selector?
     const context = this.makeContext(
-      raw,
+      rawSelector,
       [alias || applied[0], applied[1], applied[2], applied[3]],
     )
 
     // expand shortcuts
+    console.log('==> current', context.currentSelector, raw)
     const expanded = this.expandShortcut(context.currentSelector, context)
     if (expanded) {
       const utils = await this.stringifyShortcuts(context.variantMatch, context, expanded[0], expanded[1])
+      console.log('--------shortcut-----', utils, context.rawSelector)
       if (utils?.length) {
         this._cache.set(cacheKey, utils)
         return utils

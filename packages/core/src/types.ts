@@ -603,3 +603,9 @@ export interface GenerateOptions {
    */
   scope?: string
 }
+
+export interface parseTokenOptions {
+  alias?: string
+
+  rawSelector?: string
+}
