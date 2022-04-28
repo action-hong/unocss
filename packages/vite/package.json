@@ -55,6 +55,7 @@
     "magic-string": "^0.26.1"
   },
   "devDependencies": {
+    "string-replace-async": "^3.0.2",
     "vite": "^2.9.5"
   }
 }

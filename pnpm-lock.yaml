@@ -431,6 +431,7 @@ importers:
       '@unocss/scope': workspace:*
       '@unocss/transformer-directives': workspace:*
       magic-string: ^0.26.1
+      string-replace-async: ^3.0.2
       vite: ^2.9.5
     dependencies:
       '@rollup/pluginutils': 4.2.1
@@ -441,6 +442,7 @@ importers:
       '@unocss/transformer-directives': link:../transformer-directives
       magic-string: 0.26.1
     devDependencies:
+      string-replace-async: 3.0.2
       vite: 2.9.5
 
   packages/vscode:
@@ -5992,6 +5994,11 @@ packages:
   /string-argv/0.3.1:
     resolution: {integrity: sha512-a1uQGz7IyVy9YwhqjZIZu1c8JO8dNIe20xBmSS6qu9kv++k3JGzCVmprbNN5Kn+BgzD5E7YYwg1CcjuJMRNsvg==}
     engines: {node: '>=0.6.19'}
+    dev: true
+
+  /string-replace-async/3.0.2:
+    resolution: {integrity: sha512-s6hDtXJ7FKyRap/amefqrOMpkEQvxUDueyvJygQeHxCK5Za90dOMgdibCCrPdfdAYAkr8imrZ1PPXW7DOf0RzQ==}
+    engines: {node: '>= 14.0.0'}
     dev: true
 
   /string-width/4.2.3:
