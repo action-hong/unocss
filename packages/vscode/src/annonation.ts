@@ -2,6 +2,7 @@ import { relative } from 'path'
 import type { DecorationOptions, ExtensionContext, StatusBarItem } from 'vscode'
 import { DecorationRangeBehavior, MarkdownString, Range, window, workspace } from 'vscode'
 import type { UnocssPluginContext } from '@unocss/core'
+import { expandVariantGroup, extractQuoted, regexClassGroup } from '@unocss/core'
 import { INCLUDE_COMMENT_IDE, getMatchedPositions } from './integration'
 import { log } from './log'
 import { getPrettiedMarkdown, throttle } from './utils'
@@ -58,13 +59,37 @@ export async function registerAnnonations(
         return reset()
 
       const result = await uno.generate(code, { id, preflights: false, minify: true })
+      const all = new Set(result.matched)
+      const groups = new Map<string, string>()
+
+      // extract all variant groups
+      // https://go.microsoft.com/fwlink/?linkid=872305
+      // 这里报错了
+      extractQuoted(
+        code,
+        {
+          details: true,
+          templateStaticOnly: true,
+          deep: true,
+        },
+      )
+        .filter(({ value: { length } }) => length)
+        .forEach(({ value }) => {
+          let match = regexClassGroup.exec(value)
+          console.log('==> extract', value)
+          while (match) {
+            groups.set(match[0], expandVariantGroup(match[0]))
+            all.add(match[0])
+            match = regexClassGroup.exec(value)
+          }
+        })
 
       const ranges: DecorationOptions[] = (
         await Promise.all(
-          getMatchedPositions(code, Array.from(result.matched))
+          getMatchedPositions(code, Array.from(all))
             .map(async (i): Promise<DecorationOptions> => {
               try {
-                const md = await getPrettiedMarkdown(uno, i[2])
+                const md = await getPrettiedMarkdown(uno, groups.get(i[2]) ?? i[2])
                 return {
                   range: new Range(doc.positionAt(i[0]), doc.positionAt(i[1])),
                   get hoverMessage() {
@@ -81,6 +106,10 @@ export async function registerAnnonations(
         )
       ).filter(Boolean)
 
+      console.log('groups', Array.from(groups))
+      console.log('all', Array.from(all))
+      console.log('result', result.matched)
+
       if (underline) {
         editor.setDecorations(NoneDecoration, [])
         editor.setDecorations(UnderlineDecoration, ranges)
@@ -90,8 +119,8 @@ export async function registerAnnonations(
         editor.setDecorations(NoneDecoration, ranges)
       }
 
-      status.text = `UnoCSS: ${result.matched.size}`
-      status.tooltip = new MarkdownString(`${result.matched.size} utilities used in this file`)
+      status.text = `UnoCSS: ${all.size}`
+      status.tooltip = new MarkdownString(`${all.size} utilities used in this file`)
       status.show()
 
       function reset() {
